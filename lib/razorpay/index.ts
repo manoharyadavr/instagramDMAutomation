@@ -53,7 +53,7 @@ export class RazorpayClient {
      * Fetch all payments for a subscription
      */
     async fetchSubscriptionPayments(subscriptionId: string) {
-        return razorpay.subscriptions.fetchPayments(subscriptionId);
+        return (razorpay.subscriptions as any).fetchPayments(subscriptionId);
     }
 
     /**
@@ -103,7 +103,7 @@ export class RazorpayClient {
     /**
      * Create customer
      */
-    async createCustomer(customer: Customer & { fail_existing?: string }) {
+    async createCustomer(customer: Customer & { fail_existing?: boolean | 0 | 1 }) {
         return razorpay.customers.create(customer);
     }
 }

@@ -316,9 +316,9 @@ export default function SignupPage() {
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
+                        <button
+                            type="submit"
+                            disabled={loading}
                         style={{
                             width: '100%',
                             padding: '16px',
@@ -350,9 +350,9 @@ export default function SignupPage() {
                                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(59, 130, 246, 0.3)';
                             }
                         }}
-                    >
-                        {loading ? 'Creating account...' : 'Create account'}
-                    </button>
+                        >
+                            {loading ? 'Creating account...' : 'Create account'}
+                        </button>
 
                     {/* Divider */}
                     <div style={{
