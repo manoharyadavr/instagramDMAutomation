@@ -44,7 +44,7 @@ export const affiliateEnrollSchema = z.object({
 
 export const affiliateTrackSchema = z.object({
     referralCode: z.string().min(1, 'Referral code is required'),
-    metadata: z.record(z.any()).optional(),
+    metadata: z.record(z.string(), z.any()).optional(),
 });
 
 // Webhook validation
