@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
         const topAffiliates = await affiliateManager.getTopAffiliates(limit);
 
         // Format leaderboard data
-        const leaderboard = topAffiliates.map((affiliate) => ({
+        const leaderboard = topAffiliates.map((affiliate: typeof topAffiliates[number]) => ({
             id: affiliate.id,
             referralCode: affiliate.referralCode,
             totalEarnings: affiliate.totalEarnings || 0,
