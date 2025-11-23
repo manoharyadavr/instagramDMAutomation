@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Create Razorpay subscription
-        const razorpaySubscription = await razorpayClient.createSubscription({
+        const razorpaySubscription = (await razorpayClient.createSubscription({
             plan_id: data.planId,
             customer_notify: 1,
             total_count: 12, // 12 months for yearly, can be adjusted
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
                 tenant_name: tenant.user.name || '',
                 referral_code: data.referralCode || '',
             },
-        });
+        })) as any;
 
         // Save to database
         const subscription = await prisma.subscription.create({
