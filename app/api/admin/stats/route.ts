@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
             }),
         ]);
 
-        const totalRevenue = billingLogs.reduce((sum, log) => sum + log.amount, 0);
+        const totalRevenue = billingLogs.reduce((sum: number, log) => sum + log.amount, 0);
 
         return NextResponse.json({
             totalUsers,
