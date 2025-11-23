@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { affiliateManager } from '@/lib/affiliate';
-import { cookies } from 'next/headers';
 
 export async function POST(req: NextRequest) {
     try {
@@ -22,18 +21,19 @@ export async function POST(req: NextRequest) {
         });
 
         // Set cookie to track referral for 30 days
-        const cookieStore = cookies();
-        cookieStore.set('ref_code', referralCode, {
+        const response = NextResponse.json({
+            message: 'Referral tracked successfully',
+            referralCode,
+        });
+
+        response.cookies.set('ref_code', referralCode, {
             maxAge: 30 * 24 * 60 * 60, // 30 days
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
         });
 
-        return NextResponse.json({
-            message: 'Referral tracked successfully',
-            referralCode,
-        });
+        return response;
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
