@@ -1,18 +1,21 @@
 import { Queue } from 'bullmq';
-import { redis } from '@/lib/redis';
+import { getRedisConnection } from '@/lib/redis';
 
-// Reuse the ioredis connection from lib/redis if possible, 
-// but BullMQ usually needs its own connection settings or instance.
-// We'll pass the connection options.
+/**
+ * BullMQ Queues for Background Jobs
+ * 
+ * These queues require a Redis connection with pub/sub support.
+ * For Upstash, use the REDIS_URL (Redis protocol endpoint, not REST API).
+ * 
+ * Format: redis://default:password@host:port
+ * Get this from Upstash dashboard → Redis → Connect → Redis URL
+ */
 
-const connection = {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD,
-};
+// Get Redis connection for BullMQ
+const redisConnection = getRedisConnection();
 
 export const dmQueue = new Queue('dm-queue', {
-    connection,
+    connection: redisConnection,
     defaultJobOptions: {
         attempts: 3,
         backoff: {
@@ -24,5 +27,16 @@ export const dmQueue = new Queue('dm-queue', {
 });
 
 export const webhookQueue = new Queue('webhook-queue', {
-    connection,
+    connection: redisConnection,
+    defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+            type: 'exponential',
+            delay: 2000,
+        },
+        removeOnComplete: {
+            age: 3600, // Keep completed jobs for 1 hour
+            count: 1000, // Keep last 1000 completed jobs
+        },
+    },
 });

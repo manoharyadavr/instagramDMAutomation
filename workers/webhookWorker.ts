@@ -8,12 +8,7 @@
 import { Worker } from 'bullmq';
 import { ReplyEngine } from '@/lib/instagram/reply-engine';
 import { prisma } from '@/lib/prisma';
-
-const connection = {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD,
-};
+import { getRedisConnection } from '@/lib/redis';
 
 const replyEngine = new ReplyEngine();
 
@@ -56,7 +51,7 @@ export const webhookWorker = new Worker(
         }
     },
     {
-        connection,
+        connection: getRedisConnection(),
         concurrency: 5,
         limiter: {
             max: 20,

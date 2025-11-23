@@ -1,11 +1,6 @@
 import { Worker } from 'bullmq';
 import { DMEngine } from '@/lib/instagram/dm-engine';
-
-const connection = {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD,
-};
+import { getRedisConnection } from '@/lib/redis';
 
 const dmEngine = new DMEngine();
 
@@ -18,7 +13,7 @@ export const dmWorker = new Worker(
         await dmEngine.sendDM(data);
     },
     {
-        connection,
+        connection: getRedisConnection(),
         concurrency: 3, // Process up to 3 DMs concurrently
         limiter: {
             max: 20, // Max 20 DMs per duration per worker
