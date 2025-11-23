@@ -8,7 +8,7 @@ const razorpay = new Razorpay({
 
 export interface CreateSubscriptionParams {
     plan_id: string;
-    customer_notify: number;
+    customer_notify: boolean | 0 | 1;
     total_count: number;
     quantity?: number;
     notes?: Record<string, string>;
