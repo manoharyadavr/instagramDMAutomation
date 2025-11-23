@@ -1,0 +1,47 @@
+{
+  "name": "instagram-automation",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "worker": "tsx workers/index.ts",
+    "db:generate": "prisma generate --schema=./db/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema=./db/schema.prisma",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:test": "tsx scripts/test-db-connection.ts",
+    "db:create": "tsx scripts/create-database.ts",
+    "ngrok": "ngrok http 3000",
+    "ngrok:3001": "ngrok http 3001"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcrypt": "^6.0.0",
+    "bullmq": "^5.64.1",
+    "ioredis": "^5.8.2",
+    "next": "16.0.3",
+    "next-auth": "^4.24.13",
+    "nodemailer": "^7.0.7",
+    "razorpay": "^2.9.6",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^20",
+    "@types/nodemailer": "^7.0.4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.3",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
+  }
+}

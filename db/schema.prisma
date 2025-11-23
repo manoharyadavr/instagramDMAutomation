@@ -1,0 +1,225 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  SUPERADMIN
+  ADMIN
+  USER
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  TRIALING
+}
+
+enum TemplateType {
+  REPLY
+  DM
+}
+
+enum LogStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  SKIPPED
+}
+
+enum AutomationAction {
+  COMMENT_REPLY
+  SEND_DM
+  CHECK_FOLLOW
+}
+
+// Core Models
+
+model Tenant {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users             User[]
+  subscriptions     Subscription[]
+  instagramAccounts InstagramAccount[]
+  templates         Template[]
+  webhookEvents     WebhookEvent[]
+  replyLogs         ReplyLog[]
+  dmLogs            DMLog[]
+  automationLogs    AutomationLog[]
+  billingLogs       BillingLog[]
+  affiliates        Affiliate[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String?  // Optional for OAuth users
+  name      String?
+  role      UserRole @default(USER)
+  tenantId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  affiliate Affiliate?
+
+  @@index([tenantId])
+}
+
+model Subscription {
+  id              Int                @id @default(autoincrement())
+  tenantId        Int
+  razorpaySubId   String             @unique
+  planId          String
+  status          SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model Affiliate {
+  id             Int      @id @default(autoincrement())
+  tenantId       Int?
+  code           String   @unique
+  referralCode   String   @unique
+  userId         Int      @unique
+  commissionRate Float    @default(10.0)
+  balance        Float    @default(0.0)
+  totalEarnings  Float    @default(0.0)
+  pendingPayout  Float    @default(0.0)
+  totalReferrals Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+}
+
+model InstagramAccount {
+  id          Int      @id @default(autoincrement())
+  tenantId    Int
+  instagramId String   @unique // IG Business Account ID
+  username    String
+  accessToken String   @db.Text
+  
+  // Automation Config
+  enableAutoReply Boolean @default(false)
+  replyTemplateId Int?
+  dmTemplateId    Int?
+  
+  connectedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model Template {
+  id        Int          @id @default(autoincrement())
+  tenantId  Int
+  name      String
+  type      TemplateType
+  content   String       @db.Text
+  isDefault Boolean      @default(false)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+// Logs & Events
+
+model WebhookEvent {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int
+  type      String   // e.g., 'comments', 'mentions'
+  payload   Json
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model ReplyLog {
+  id          Int       @id @default(autoincrement())
+  tenantId    Int
+  commentId   String
+  mediaId     String
+  username    String
+  replyText   String    @db.Text
+  status      LogStatus @default(PENDING)
+  error       String?   @db.Text
+  createdAt   DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model DMLog {
+  id          Int       @id @default(autoincrement())
+  tenantId    Int
+  username    String    // Recipient
+  messageText String    @db.Text
+  status      LogStatus @default(PENDING)
+  error       String?   @db.Text
+  createdAt   DateTime  @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model AutomationLog {
+  id        Int              @id @default(autoincrement())
+  tenantId  Int
+  action    AutomationAction
+  details   String?          @db.Text
+  status    LogStatus
+  createdAt DateTime         @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model BillingLog {
+  id          Int      @id @default(autoincrement())
+  tenantId    Int
+  amount      Float
+  currency    String   @default("INR")
+  description String
+  status      String   // e.g., 'paid', 'failed'
+  createdAt   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}

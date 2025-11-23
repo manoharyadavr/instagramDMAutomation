@@ -1,0 +1,28 @@
+/* Card.module.css */
+.card {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-glass);
+    padding: 1.2rem;
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.title {
+    margin: 0 0 0.8rem;
+    font-size: 1.2rem;
+    color: var(--color-primary);
+}
+
+.body {
+    color: var(--color-text);
+}
+
+.footer {
+    margin-top: 1rem;
+    text-align: right;
+}
