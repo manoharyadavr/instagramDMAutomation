@@ -370,7 +370,7 @@ function LoginForm() {
 
                         <button
                             type="button"
-                            onClick={() => signIn('instagram', { callbackUrl: '/dashboard' })}
+                            onClick={() => window.location.href = '/api/instagram/auth'}
                             style={{
                                 width: '100%',
                                 padding: '14px',
