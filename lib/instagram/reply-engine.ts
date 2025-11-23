@@ -2,7 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { InstagramClient } from '@/lib/instagram/graph';
 import { dmQueue } from '@/lib/queue';
 import { quotaManager } from '@/lib/razorpay/quota';
-import { LogStatus } from '@prisma/client';
+
+type LogStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'SKIPPED';
 
 interface CommentEvent {
     id: string; // comment ID
