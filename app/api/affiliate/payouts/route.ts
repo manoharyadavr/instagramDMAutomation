@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
         // Get affiliate record
         const affiliate = await prisma.affiliate.findUnique({
-            where: { userId: tenant.user.id },
+            where: { userId: parseInt(tenant.user.id) },
         });
 
         if (!affiliate) {
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
 
         // Get payout history (would come from a separate PayoutLog table in production)
         const affiliate = await prisma.affiliate.findUnique({
-            where: { userId: tenant.user.id },
+            where: { userId: parseInt(tenant.user.id) },
         });
 
         if (!affiliate) {

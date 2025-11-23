@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
         // Enroll user as affiliate
         const affiliate = await affiliateManager.enrollAffiliate(
-            tenant.user.id,
+            parseInt(tenant.user.id),
             tenant.tenantId
         );
 
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
         const tenant = await requireTenant();
 
         // Get affiliate stats
-        const stats = await affiliateManager.getAffiliateStats(tenant.user.id);
+        const stats = await affiliateManager.getAffiliateStats(parseInt(tenant.user.id));
 
         if (!stats) {
             return NextResponse.json(
