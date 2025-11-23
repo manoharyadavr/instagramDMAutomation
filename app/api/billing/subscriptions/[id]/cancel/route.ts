@@ -5,17 +5,18 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const tenant = await requireTenant();
         const body = await req.json();
         const cancelAtCycleEnd = body.cancelAtCycleEnd || false;
+        const { id } = await params;
 
         // Get subscription
         const subscription = await prisma.subscription.findFirst({
             where: {
-                id: parseInt(params.id),
+                id: parseInt(id),
                 tenantId: tenant.tenantId,
             },
         });

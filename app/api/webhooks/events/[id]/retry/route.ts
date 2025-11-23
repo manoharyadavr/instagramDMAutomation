@@ -5,11 +5,12 @@ import { webhookQueue } from '@/lib/queue';
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const tenant = await requireTenant();
-        const eventId = parseInt(params.id);
+        const { id } = await params;
+        const eventId = parseInt(id);
 
         // Get the webhook event
         const event = await prisma.webhookEvent.findFirst({
